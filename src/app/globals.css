@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Quicksand:wght@300..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Quicksand", sans-serif;
+  color: #472c1b;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: 0.168px;
+  background-image: url("/assets/images/paper_background.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
