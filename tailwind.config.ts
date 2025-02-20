@@ -8,9 +8,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        quicksand: ["Quicksand", "sans-serif"],
+        kalam: ["Kalam", "cursive"],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        white: "#FFFBF2",
+        brown: "#815A39",
+        dark_brown: "#472C1B",
+        grey: "#AA9E96",
+        light_grey: "#C6BEB8",
       },
     },
   },
