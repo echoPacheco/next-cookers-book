@@ -1,3 +1,4 @@
+import connectToDatabase from "@/lib/db";
 import { Recipe } from "@/models/recipeSchema";
 // import { getUserById } from "./userController";
 import { User } from "@/models/userSchema";
@@ -50,6 +51,8 @@ import RecipeType from "@/types/recipe";
 
 export const getPublicRecipes = async (): Promise<RecipeType[] | undefined> => {
   try {
+    await connectToDatabase();
+
     const recipes = await Recipe.find({ is_private: false });
     if (!recipes) {
       console.log("Recipes not found");

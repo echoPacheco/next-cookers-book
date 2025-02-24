@@ -17,6 +17,8 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
               ? recipe_pic
               : "https://morar.com.br/wp-content/uploads/2020/08/Receitas_Rapidas_Morar_Construtora.jpeg"
           }
+          width={350}
+          height={350}
           alt={name || "Default recipe image"}
           className="w-full max-h-52 object-cover rounded-t-2xl"
         />

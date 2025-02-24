@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { models, Schema } from "mongoose";
 import RecipeType from "@/types/recipe";
 
 const recipeSchema = new mongoose.Schema<RecipeType>({
@@ -45,4 +45,5 @@ const recipeSchema = new mongoose.Schema<RecipeType>({
   },
 });
 
-export const Recipe = mongoose.model<RecipeType>("Recipe", recipeSchema);
+export const Recipe =
+  models.Recipe || mongoose.model<RecipeType>("Recipe", recipeSchema);

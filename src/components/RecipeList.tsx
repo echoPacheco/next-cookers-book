@@ -11,6 +11,7 @@ const RecipeList = ({ recipes }: RecipeListProps) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-10">
       {recipes.map((recipe) => (
         <Link
+          key={recipe._id.toString()}
           href={`/recipe/${recipe._id}`}
           className="text-gray-200 hover:text-white"
         >

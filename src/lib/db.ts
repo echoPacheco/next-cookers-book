@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-let MONGODB_URI = process.env.MONGODB_URI as string;
+let MONGODB_URI = process.env.REMOTE_DB_URI as string;
 
 if (!MONGODB_URI) {
   console.warn(

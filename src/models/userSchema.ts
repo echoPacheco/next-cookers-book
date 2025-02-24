@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { models, Schema } from "mongoose";
 import UserType from "@/types/user";
 
 const userSchema = new mongoose.Schema<UserType>({
@@ -34,4 +34,4 @@ const userSchema = new mongoose.Schema<UserType>({
   },
 });
 
-export const User = mongoose.model<UserType>("User", userSchema);
+export const User = models.User || mongoose.model<UserType>("User", userSchema);
