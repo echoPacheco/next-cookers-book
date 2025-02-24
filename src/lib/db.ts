@@ -1,6 +1,7 @@
+/* eslint-disable */
 import mongoose from "mongoose";
 
-let MONGODB_URI = process.env.REMOTE_DB_URI as string;
+const MONGODB_URI = process.env.REMOTE_DB_URI as string;
 
 if (!MONGODB_URI) {
   console.warn(

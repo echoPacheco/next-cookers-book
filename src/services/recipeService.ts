@@ -1,7 +1,7 @@
 import connectToDatabase from "@/lib/db";
 import { Recipe } from "@/models/recipeSchema";
 // import { getUserById } from "./userController";
-import { User } from "@/models/userSchema";
+// import { User } from "@/models/userSchema";
 import RecipeType from "@/types/recipe";
 // import { addMultipleIngredients } from "./ingredientController";
 // import IngredientType from "../types/ingredient";

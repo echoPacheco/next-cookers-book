@@ -5,7 +5,7 @@ type RecipeType = {
   name: string;
   description: string;
   is_private: boolean;
-  recipe_pic: String;
+  recipe_pic: string;
   category: string;
   ingredients_id_list: mongoose.Types.ObjectId[];
   instructions: string[];

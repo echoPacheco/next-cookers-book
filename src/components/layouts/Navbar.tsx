@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 
 const Navbar = () => {
   // const handleLogout = async () => {
@@ -22,8 +23,14 @@ const Navbar = () => {
           href="/"
           className="text-white text-lg font-semibold flex items-center hover:text-white"
         >
-          <img className="max-h-12" src="/assets/icons/cooker.svg" alt="Logo" />{" "}
-          Cooker's Book
+          <Image
+            className="max-h-12"
+            src="/assets/icons/cooker.svg"
+            alt="Logo"
+            width={48}
+            height={48}
+          />{" "}
+          Cooker&apos;s Book
         </Link>
 
         <nav className="flex-1 flex justify-end space-x-6 mx-5">
