@@ -1,0 +1,138 @@
+"use client";
+
+import { useState, FormEvent, ChangeEvent } from "react";
+import Image from "next/image";
+import { updateUserProfile } from "@/services/userService";
+
+export default function ProfileForm({ user }: { user: any }) {
+  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState(user?.name || "");
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [previewPic, setPreviewPic] = useState(
+    user?.profile_pic || "/user-circle.svg"
+  );
+  const [message, setMessage] = useState<string | null>(null);
+
+  const settingsOptions = [
+    { icon: "/icons/dark-mode.svg", label: "Dark Mode" },
+    { icon: "/icons/notification.svg", label: "Notification" },
+    { icon: "/icons/language.svg", label: "Language" },
+    { icon: "/icons/question.svg", label: "Help" },
+  ];
+
+  const handleProfilePicChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePic(file);
+      setPreviewPic(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("name", name);
+    if (profilePic) formData.append("profile_pic", profilePic);
+
+    const result = await updateUserProfile(formData);
+    if (result.success) {
+      setMessage("Profile updated successfully!");
+    } else {
+      setMessage(result.error || "Something failed");
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center w-full max-w-xs mx-auto mt-6 gap-6">
+      {message && <p className="text-sm text-green-500">{message}</p>}
+
+      <form
+        className="flex flex-col items-center gap-6 w-full"
+        onSubmit={handleSubmit}
+      >
+        <div className="flex flex-col w-full">
+          <label htmlFor="name" className="text-left">
+            Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            className="w-full border border-gray-300 rounded-md px-4 py-2"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col w-full">
+          <label htmlFor="email" className="text-left">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="w-full border border-gray-300 rounded-md px-4 py-2"
+            value={email}
+            disabled
+          />
+        </div>
+
+        <div className="flex flex-col items-center">
+          <Image
+            className="size-32 rounded-full"
+            src={previewPic}
+            alt="Profile Preview"
+            width={128}
+            height={128}
+          />
+          <label
+            htmlFor="profilePic"
+            className="cursor-pointer text-blue-500 mt-2"
+          >
+            Edit picture
+          </label>
+          <input
+            id="profilePic"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfilePicChange}
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-brown text-white py-2 px-4 rounded-md"
+        >
+          Submit
+        </button>
+      </form>
+      <div className="w-full flex flex-col items-start gap-3 mt-8">
+        <p className="text-lg font-semibold">Settings</p>
+        {settingsOptions.map((option, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between w-full gap-3"
+          >
+            <div className="flex items-center gap-3">
+              <Image
+                src={option.icon}
+                alt={`${option.label} Icon`}
+                width={28}
+                height={28}
+              />
+              <span>{option.label}</span>
+            </div>
+            <Image
+              src="/icons/toggle.svg"
+              alt="Toggle Icon"
+              width={28}
+              height={28}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

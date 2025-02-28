@@ -5,7 +5,7 @@ import Link from "next/link";
 const Navbar = () => {
   // const handleLogout = async () => {
   //   try {
-  //     await fetch("http://localhost:3000/auth/logout", {
+  //     await fetch(baseUrl + "/auth/logout", {
   //       method: "GET",
   //       credentials: "include",
   //     });
@@ -25,7 +25,7 @@ const Navbar = () => {
         >
           <Image
             className="max-h-12"
-            src="/assets/icons/cooker.svg"
+            src="/icons/cooker.svg"
             alt="Logo"
             width={48}
             height={48}
