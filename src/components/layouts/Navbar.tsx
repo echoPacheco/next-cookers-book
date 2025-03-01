@@ -1,21 +1,9 @@
+import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 // import { redirect } from "next/navigation";
 
-const Navbar = () => {
-  // const handleLogout = async () => {
-  //   try {
-  //     await fetch(baseUrl + "/auth/logout", {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-
-  //     redirect("/auth/login");
-  //   } catch (error) {
-  //     console.error("Error logging out:", error);
-  //   }
-  // };
-
+const Navbar = async () => {
   return (
     <div className="relative w-full h-20 shadow-md">
       <div className="absolute inset-0 bg-brown flex items-center justify-between px-8">
@@ -46,17 +34,27 @@ const Navbar = () => {
         </nav>
 
         <div className="flex space-x-4">
-          <Link href="/recipe/new">
-            <button className="bg-dark_brown text-white hover:opacity-85 py-2 px-4 rounded-md">
-              Add recipe
-            </button>
-          </Link>
-          <button
-            className="bg-white text-dark_brown hover:opacity-75 py-2 px-4 rounded-md"
-            // onClick={handleLogout}
-          >
-            Logout
-          </button>
+          <SignedIn>
+            <Link href="/recipe/new">
+              <button className="bg-dark_brown text-white hover:opacity-85 py-2 px-4 rounded-md">
+                Add recipe
+              </button>
+            </Link>
+            <SignOutButton>
+              <button className="bg-white text-dark_brown hover:opacity-85 py-2 px-4 rounded-md">
+                Logout
+              </button>
+            </SignOutButton>
+          </SignedIn>
+
+          <SignedOut>
+            <Link
+              href={"/sign-in"}
+              className="bg-white text-dark_brown hover:opacity-75 py-2 px-4 rounded-md"
+            >
+              Sign In
+            </Link>
+          </SignedOut>
         </div>
       </div>
     </div>

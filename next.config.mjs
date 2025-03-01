@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "morar.com.br",
-      "atsloanestable.com",
-      "www.simplyrecipes.com",
-      "assets.bonappetit.com",
+    remotePatterns: [
+      { hostname: "morar.com.br" },
+      { hostname: "atsloanestable.com" },
+      { hostname: "www.simplyrecipes.com" },
+      { hostname: "assets.bonappetit.com" },
     ],
   },
 };
