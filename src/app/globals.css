@@ -14,7 +14,6 @@ body {
   letter-spacing: 0.168px;
   background-image: url("/images/paper_background.webp");
   background-size: cover;
-  background-repeat: no-repeat;
   background-position: center;
   min-height: 100vh;
 }

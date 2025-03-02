@@ -32,7 +32,6 @@ export default function ProfileForm({ user }: { user: any }) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("email", email);
     formData.append("name", name);
     if (profilePic) formData.append("profile_pic", profilePic);
 
@@ -52,6 +51,29 @@ export default function ProfileForm({ user }: { user: any }) {
         className="flex flex-col items-center gap-6 w-full"
         onSubmit={handleSubmit}
       >
+        <div className="flex flex-col items-center">
+          <Image
+            className="size-32 rounded-full"
+            src={previewPic}
+            alt="Profile Preview"
+            width={128}
+            height={128}
+          />
+          <label
+            htmlFor="profilePic"
+            className="cursor-pointer text-blue-500 mt-2"
+          >
+            Edit picture
+          </label>
+          <input
+            id="profilePic"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfilePicChange}
+          />
+        </div>
+
         <div className="flex flex-col w-full">
           <label htmlFor="name" className="text-left">
             Name
@@ -75,29 +97,6 @@ export default function ProfileForm({ user }: { user: any }) {
             className="w-full border border-gray-300 rounded-md px-4 py-2"
             value={email}
             disabled
-          />
-        </div>
-
-        <div className="flex flex-col items-center">
-          <Image
-            className="size-32 rounded-full"
-            src={previewPic}
-            alt="Profile Preview"
-            width={128}
-            height={128}
-          />
-          <label
-            htmlFor="profilePic"
-            className="cursor-pointer text-blue-500 mt-2"
-          >
-            Edit picture
-          </label>
-          <input
-            id="profilePic"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleProfilePicChange}
           />
         </div>
 

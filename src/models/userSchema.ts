@@ -2,14 +2,14 @@ import mongoose, { models, Schema } from "mongoose";
 import UserType from "@/types/user";
 
 const userSchema = new mongoose.Schema<UserType>({
-  email: {
+  clerk_id: {
     type: String,
     required: true,
     unique: true,
   },
-  password: {
+  email: {
     type: String,
-    required: true,
+    unique: true,
   },
   name: {
     type: String,

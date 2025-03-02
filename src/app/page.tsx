@@ -1,10 +1,20 @@
-// import Image from "next/image";
-
 import RecipeList from "@/components/RecipeList";
 import { getPublicRecipes } from "@/services/recipeService";
+import { findOrCreateUser } from "@/services/userService";
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Home() {
   const publicRecipes = await getPublicRecipes();
+
+  const user = await currentUser();
+
+  if (user) {
+    await findOrCreateUser(
+      user.id,
+      user.username || user.firstName || undefined,
+      user.imageUrl
+    );
+  }
 
   return (
     <main className="text-center my-8">

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 type UserType = {
-  email: string;
-  password: string;
+  clerk_id: string;
+  email?: string;
   name: string;
   profile_pic: string;
   recipes_id_list?: mongoose.Types.ObjectId[];

@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`antialiased pb-16`}>
+        <body className={`antialiased pb-16 md:pb-0`}>
           <Navbar />
           {children}
           {/* <Footer /> */}

@@ -3,15 +3,43 @@
 import connectToDatabase from "@/lib/db";
 import { User } from "@/models/userSchema";
 import { revalidatePath } from "next/cache";
-// import { UserType } from "@/types/user";
+import UserType from "@/types/user";
 
-export async function getUserByEmail(email: string) {
+export async function getUserByClerkId(clerkId: string) {
   try {
     await connectToDatabase();
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ clerk_id: clerkId });
     return JSON.parse(JSON.stringify(user));
   } catch (error) {
     console.log("error", error);
+  }
+}
+
+export async function findOrCreateUser(
+  clerkId: string,
+  name?: string,
+  profilePic?: string,
+  email?: string
+): Promise<UserType | null> {
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({ clerk_id: clerkId });
+
+    if (user) {
+      return user;
+    }
+
+    const newUser = await User.create({
+      clerk_id: clerkId,
+      name: name || "User",
+      profile_pic: profilePic || "/default_user.png",
+      email,
+    });
+
+    return newUser;
+  } catch (error) {
+    console.error("Error checking or creating user:", error);
+    return null;
   }
 }
 
