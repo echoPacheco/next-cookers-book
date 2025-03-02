@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/db";
 import { User } from "@/models/userSchema";
 import { revalidatePath } from "next/cache";
 import UserType from "@/types/user";
+import cloudinary from "@/cloudinaryConfig";
 
 export async function getUserByClerkId(clerkId: string) {
   try {
@@ -48,11 +49,29 @@ export async function updateUserProfile(formData: FormData) {
     await connectToDatabase();
     const email = formData.get("email") as string;
     const name = formData.get("name") as string;
-    const profilePic = formData.get("profile_pic") as string;
+    const profilePic = formData.get("profile_pic") as File | null;
+
+    let profilePicUrl = null;
+
+    if (profilePic) {
+      const arrayBuffer = await profilePic.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "profile_pictures" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(buffer);
+      });
+
+      profilePicUrl = (uploadResult as any).secure_url;
+    }
 
     const updatedUser = await User.findOneAndUpdate(
       { email },
-      { name, profile_pic: profilePic },
+      { name, ...(profilePicUrl && { profile_pic: profilePicUrl }) },
       { new: true }
     );
 

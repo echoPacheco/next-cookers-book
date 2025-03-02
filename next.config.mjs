@@ -7,6 +7,7 @@ const nextConfig = {
       { hostname: "www.simplyrecipes.com" },
       { hostname: "assets.bonappetit.com" },
       { hostname: "img.clerk.com" },
+      { hostname: "res.cloudinary.com" },
     ],
   },
 };
