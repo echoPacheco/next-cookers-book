@@ -13,4 +13,28 @@ type RecipeType = {
   updated_at?: Date;
 };
 
+export type UnitType =
+  | "mg"
+  | "g"
+  | "kg"
+  | "ml"
+  | "l"
+  | "cm"
+  | "m"
+  | "unit"
+  | "tsp"
+  | "tbsp"
+  | "cup"
+  | "pint";
+
+type IngredientType = {
+  name: string;
+  unit_type: UnitType;
+  quantity: number;
+  price_per_unit?: number;
+  created_at: Date;
+  updated_at?: Date;
+  _id: string;
+};
+
 export default RecipeType;
