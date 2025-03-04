@@ -17,3 +17,7 @@ body {
   background-position: center;
   min-height: 100vh;
 }
+
+.chocolate-button {
+  @apply bg-brown text-white hover:opacity-85 py-2 px-4 rounded-md;
+}

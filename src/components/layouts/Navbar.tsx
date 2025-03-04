@@ -35,7 +35,7 @@ const Navbar = async () => {
 
         <div className="flex space-x-4">
           <SignedIn>
-            <Link href="/recipe/new">
+            <Link href="/recipe">
               <button className="bg-dark_brown text-white hover:opacity-85 py-2 px-4 rounded-md">
                 Add recipe
               </button>
@@ -85,7 +85,7 @@ const Navbar = async () => {
           <span className="text-xs">Favorites</span>
         </Link>
 
-        <Link href="/profile" className="flex flex-col gap-1 items-center">
+        <Link href="/recipe" className="flex flex-col gap-1 items-center">
           <Image src="/icons/add.svg" alt="Plus icon" width={24} height={24} />
           <span className="text-xs">Create</span>
         </Link>
