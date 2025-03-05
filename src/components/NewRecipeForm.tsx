@@ -1,17 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UnitType } from "@/types/recipe";
-import { Category } from "@/types/category";
+import { CategoryType } from "@/types/category";
 
 const NewRecipeForm = () => {
+  const [previewPic, setPreviewPic] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [ingredients, setIngredients] = useState([
-    { name: "", quantity: "", unit_type: "g" as UnitType },
+    { name: "", quantity: "", unit_type: "g" as UnitType, price: "" },
   ]);
   const [instructions, setInstructions] = useState([""]);
   const [recipePic, setRecipePic] = useState<File | null>(null);
@@ -34,22 +36,30 @@ const NewRecipeForm = () => {
     fetchCategories();
   }, []);
 
+  const handleRecipePicChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setRecipePic(file);
+      setPreviewPic(URL.createObjectURL(file));
+    }
+  };
+
   const handleAddIngredient = () => {
     setIngredients([
       ...ingredients,
-      { name: "", quantity: "", unit_type: "g" as UnitType },
+      { name: "", quantity: "", unit_type: "g" as UnitType, price: "" },
     ]);
   };
 
   const handleIngredientChange = (
     index: number,
     field: keyof (typeof ingredients)[0],
-    value: string
+    value: string,
   ) => {
     setIngredients(
       ingredients.map((ing, i) =>
-        i === index ? { ...ing, [field]: value } : ing
-      )
+        i === index ? { ...ing, [field]: value } : ing,
+      ),
     );
   };
 
@@ -71,37 +81,80 @@ const NewRecipeForm = () => {
     }
 
     try {
-      const response = await fetch("/api/recipes", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      console.log(formData);
 
-      if (response.ok) {
-        console.log("Recipe created successfully!");
-        router.push("/");
-      } else {
-        console.error("Failed to create recipe.");
-      }
+      // const response = await fetch("/api/recipes", {
+      //   method: "POST",
+      //   body: formData,
+      //   credentials: "include",
+      // });
+
+      // if (response.ok) {
+      //   console.log("Recipe created successfully!");
+      //   router.push("/");
+      // } else {
+      //   console.error("Failed to create recipe.");
+      // }
     } catch (error) {
       console.error("An error occurred:", error);
     }
   };
 
   return (
-    <main className="max-w-4xl text-dark_brown mx-auto my-8 px-4">
-      <h1 className="font-kalam text-4xl font-bold mb-6">
+    <main className="mx-auto my-8 max-w-4xl px-4 text-dark_brown">
+      <h1 className="mb-6 text-center font-kalam text-4xl font-bold">
         Create a New Recipe
       </h1>
       <form onSubmit={handleSubmit}>
+        <div className="mb-4 flex w-full flex-col items-center rounded-md bg-gray-700 bg-opacity-40">
+          {previewPic ? (
+            <Image
+              className="max-h-[300px] w-full rounded-md object-cover"
+              src={previewPic}
+              alt="Recipe Preview"
+              width={128}
+              height={128}
+              quality={100}
+            />
+          ) : (
+            <div className="flex h-[300px] w-full items-center justify-center rounded-md">
+              <label
+                htmlFor="recipePic"
+                className="chocolate-button cursor-pointer"
+              >
+                Add picture
+              </label>
+            </div>
+          )}
+          <input
+            id="recipePic"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleRecipePicChange}
+          />
+        </div>
+        {previewPic ? (
+          <div className="mb-4 flex justify-center">
+            <label
+              htmlFor="recipePic"
+              className="chocolate-button cursor-pointer text-center"
+            >
+              Update picture
+            </label>
+          </div>
+        ) : null}
+
         {/* Recipe Name */}
         <div className="mb-4">
           <label className="block">Recipe Name</label>
           <input
             type="text"
+            placeholder="Recipe Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border rounded w-full py-2 px-3"
+            className="w-full rounded-md border px-3 py-2"
+            required
           />
         </div>
 
@@ -109,9 +162,10 @@ const NewRecipeForm = () => {
         <div className="mb-4">
           <label className="block">Description</label>
           <textarea
+            placeholder="Description..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="border rounded w-full py-2 px-3"
+            className="w-full rounded-md border px-3 py-2"
           />
         </div>
 
@@ -121,7 +175,8 @@ const NewRecipeForm = () => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border rounded w-full py-2 px-3"
+            className="w-full rounded-md border px-3 py-2"
+            required
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
@@ -132,45 +187,37 @@ const NewRecipeForm = () => {
           </select>
         </div>
 
-        {/* Privacy Setting */}
-        <div className="mb-4">
-          <label className="block">Private Recipe</label>
-          <input
-            type="checkbox"
-            checked={isPrivate}
-            onChange={(e) => setIsPrivate(e.target.checked)}
-          />
-        </div>
-
         {/* Ingredients */}
         <div className="mb-4">
           <label className="block">Ingredients</label>
           {ingredients.map((ingredient, index) => (
-            <div key={index} className="flex space-x-4 mb-2">
+            <div key={index} className="mb-2 flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Ingredient Name"
+                placeholder="Name"
                 value={ingredient.name}
                 onChange={(e) =>
                   handleIngredientChange(index, "name", e.target.value)
                 }
-                className="border rounded py-2 px-3 w-full"
+                className="w-full rounded-md border px-3 py-2"
+                required
               />
               <input
                 type="number"
-                placeholder="Quantity"
+                placeholder="Qty"
                 value={ingredient.quantity}
                 onChange={(e) =>
                   handleIngredientChange(index, "quantity", e.target.value)
                 }
-                className="border rounded py-2 px-3 w-full"
+                className="w-24 rounded-md border px-3 py-2"
+                required
               />
               <select
                 value={ingredient.unit_type}
                 onChange={(e) =>
                   handleIngredientChange(index, "unit_type", e.target.value)
                 }
-                className="border rounded py-2 px-3 w-full"
+                className="w-24 rounded-md border px-3 py-2"
               >
                 {[
                   "mg",
@@ -191,6 +238,26 @@ const NewRecipeForm = () => {
                   </option>
                 ))}
               </select>
+              <input
+                type="number"
+                placeholder="Price"
+                value={ingredient.price}
+                onChange={(e) =>
+                  handleIngredientChange(index, "price", e.target.value)
+                }
+                className="w-24 rounded-md border px-3 py-2"
+              />
+              {ingredients.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIngredients((prev) => prev.filter((_, i) => i !== index))
+                  }
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ✖
+                </button>
+              )}
             </div>
           ))}
           <button
@@ -206,19 +273,34 @@ const NewRecipeForm = () => {
         <div className="mb-4">
           <label className="block">Instructions</label>
           {instructions.map((instruction, index) => (
-            <textarea
-              key={index}
-              value={instruction}
-              onChange={(e) =>
-                setInstructions(
-                  instructions.map((ins, i) =>
-                    i === index ? e.target.value : ins
+            <div key={index} className="mb-2 flex items-center gap-2">
+              <textarea
+                value={instruction}
+                onChange={(e) =>
+                  setInstructions(
+                    instructions.map((ins, i) =>
+                      i === index ? e.target.value : ins,
+                    ),
                   )
-                )
-              }
-              placeholder={`Step ${index + 1}`}
-              className="border rounded w-full py-2 px-3 mb-2"
-            />
+                }
+                placeholder={`Step ${index + 1}`}
+                className="w-full rounded-md border px-3 py-2"
+                required
+              />
+              {instructions.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setInstructions((prev) =>
+                      prev.filter((_, i) => i !== index),
+                    )
+                  }
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ✖
+                </button>
+              )}
+            </div>
           ))}
           <button
             type="button"
@@ -229,22 +311,30 @@ const NewRecipeForm = () => {
           </button>
         </div>
 
-        {/* Recipe Image */}
-        <div className="mb-4">
-          <label className="block">Recipe Image</label>
+        {/* Privacy Setting */}
+        <div className="mb-4 flex items-center justify-center space-x-2">
           <input
-            type="file"
-            onChange={(e) =>
-              setRecipePic(e.target.files ? e.target.files[0] : null)
-            }
-            className="border rounded py-2 px-3"
+            type="checkbox"
+            checked={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+            id="private-checkbox"
+            className="peer opacity-0"
           />
+          <label
+            htmlFor="private-checkbox"
+            className="h-5 w-5 cursor-pointer rounded-md border-2 border-dark_brown peer-checked:border-transparent peer-checked:bg-dark_brown"
+          >
+            <span className="block h-full w-full bg-transparent"></span>
+          </label>
+          <span>Keep this recipe secret, so only you can see it.</span>
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="chocolate-button">
-          Create Recipe
-        </button>
+        <div className="flex justify-center">
+          <button type="submit" className="chocolate-button">
+            Create Recipe
+          </button>
+        </div>
       </form>
     </main>
   );
