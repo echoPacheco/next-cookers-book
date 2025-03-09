@@ -1,13 +1,21 @@
-import mongoose, { models, Schema } from "mongoose";
+import mongoose, { models } from "mongoose";
 import RecipeType from "@/types/recipe";
 
 const recipeSchema = new mongoose.Schema<RecipeType>({
+  user_id: {
+    type: String,
+    require: true,
+  },
   name: {
     type: String,
     required: true,
   },
   description: {
     type: String,
+    required: true,
+  },
+  prep_time: {
+    type: Number,
     required: true,
   },
   is_private: {
@@ -22,10 +30,9 @@ const recipeSchema = new mongoose.Schema<RecipeType>({
     type: String,
     required: true,
   },
-  ingredients_id_list: [
+  ingredients: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Ingredient",
+      type: Object,
       required: true,
     },
   ],

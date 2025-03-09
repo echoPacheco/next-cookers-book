@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UnitType } from "@/types/recipe";
-import { CategoryType } from "@/types/category";
+import CategoryType from "@/types/category";
 
 const NewRecipeForm = () => {
   const [previewPic, setPreviewPic] = useState("");
@@ -11,6 +11,7 @@ const NewRecipeForm = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [prepTime, setPrepTime] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [ingredients, setIngredients] = useState([
     { name: "", quantity: "", unit_type: "g" as UnitType, price: "" },
@@ -20,19 +21,22 @@ const NewRecipeForm = () => {
   const router = useRouter();
 
   useEffect(() => {
+    console.log(category);
+  }, [category]);
+
+  useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
-        if (response.ok) {
-          const data = await response.json();
-          setCategories(data);
-        } else {
-          console.error("Failed to fetch categories");
-        }
+        if (!response.ok) throw new Error("Failed to fetch categories");
+
+        const categories = await response.json();
+        setCategories(categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
+
     fetchCategories();
   }, []);
 
@@ -72,6 +76,7 @@ const NewRecipeForm = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
+    formData.append("prep_time", prepTime);
     formData.append("category", category);
     formData.append("is_private", isPrivate.toString());
     formData.append("ingredients", JSON.stringify(ingredients));
@@ -81,20 +86,18 @@ const NewRecipeForm = () => {
     }
 
     try {
-      console.log(formData);
+      const response = await fetch("/api/recipes", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
 
-      // const response = await fetch("/api/recipes", {
-      //   method: "POST",
-      //   body: formData,
-      //   credentials: "include",
-      // });
-
-      // if (response.ok) {
-      //   console.log("Recipe created successfully!");
-      //   router.push("/");
-      // } else {
-      //   console.error("Failed to create recipe.");
-      // }
+      if (response.ok) {
+        console.log("Recipe created successfully!");
+        router.push("/");
+      } else {
+        console.error("Failed to create recipe.");
+      }
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -180,11 +183,36 @@ const NewRecipeForm = () => {
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
+              <option key={cat._id} value={cat.name}>
                 {cat.name}
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Preparation Time */}
+        <div className="mb-4">
+          <label className="block">Preparation Time (hh:mm)</label>
+          <input
+            type="text"
+            placeholder="00:00"
+            value={prepTime}
+            onChange={(e) => {
+              let value = e.target.value.replace(/\D/g, "");
+
+              if (value.length > 4) value = value.slice(0, 4);
+
+              if (value.length > 2) {
+                value = value.slice(0, 2) + ":" + value.slice(2);
+              }
+
+              setPrepTime(value);
+            }}
+            className="w-20 rounded-md border px-3 py-2 text-center"
+            maxLength={5}
+            minLength={5}
+            required
+          />
         </div>
 
         {/* Ingredients */}

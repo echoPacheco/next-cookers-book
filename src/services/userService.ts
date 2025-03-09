@@ -20,7 +20,7 @@ export async function findOrCreateUser(
   clerkId: string,
   name?: string,
   profilePic?: string,
-  email?: string
+  email?: string,
 ): Promise<UserType | null> {
   try {
     await connectToDatabase();
@@ -72,7 +72,7 @@ export async function updateUserProfile(formData: FormData) {
     const updatedUser = await User.findOneAndUpdate(
       { email },
       { name, ...(profilePicUrl && { profile_pic: profilePicUrl }) },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedUser) {

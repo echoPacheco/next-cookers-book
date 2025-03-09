@@ -1,4 +1,7 @@
-export type Category = {
-    _id: string;
-    name: string;
+type CategoryType = {
+  _id: string;
+  name: string;
+  created_at: Date;
 };
+
+export default CategoryType;

@@ -12,17 +12,17 @@ export default async function Home() {
     await findOrCreateUser(
       user.id,
       user.username || user.firstName || undefined,
-      user.imageUrl
+      user.imageUrl,
     );
   }
 
   return (
-    <main className="text-center my-8">
+    <main className="my-8 text-center">
       <h1 className="text-4xl font-bold">Welcome to Cooker&apos;s book!</h1>
-      <p className="text-lg mt-4">
+      <p className="mt-4 text-lg">
         Explore delicious recipes and create your own culinary masterpieces.
       </p>
-      <p className="text-2xl mt-6 font-semibold">
+      <p className="mt-6 text-2xl font-semibold">
         Looking for inspiration? Here are some recipes just for you:
       </p>
       <section className="mt-8">

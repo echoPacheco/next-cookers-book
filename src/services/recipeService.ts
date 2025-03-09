@@ -1,53 +1,26 @@
 import connectToDatabase from "@/lib/db";
+import { Category } from "@/models/categorySchema";
 import { Recipe } from "@/models/recipeSchema";
+import CategoryType from "@/types/category";
 // import { getUserById } from "./userController";
 // import { User } from "@/models/userSchema";
-import RecipeType from "@/types/recipe";
-// import { addMultipleIngredients } from "./ingredientController";
-// import IngredientType from "../types/ingredient";
-// import cloudinary from "../cloudinaryConfig";
-// import { MulterRequest } from "../middlewares/multerConfig";
+import RecipeType, { IngredientType } from "@/types/recipe";
+import { getUserByClerkId } from "@/services/userService";
+import cloudinary from "@/cloudinaryConfig";
 
-// export const getRecipe = async (req: Request, res: Response) => {
-//     const recipe_id = req.params.recipe_id;
+export const getCategories = async (): Promise<CategoryType[] | undefined> => {
+  try {
+    await connectToDatabase();
 
-//     try {
-//         const recipe = await Recipe.findById(recipe_id).populate(
-//             "ingredients_id_list"
-//         );
-
-//         if (!recipe) {
-//             return res.status(404).json({ message: "Recipe not found" });
-//         }
-//         res.json(recipe);
-//     } catch (error) {
-//         res.status(500).json({ message: "Internal server error", error });
-//     }
-// };
-
-// export const getUserRecipes = async (req: Request, res: Response) => {
-//     const user_id = req.session.currentUser.id;
-
-//     try {
-//         if (user_id) {
-//             const { user, error } = await getUserById(user_id);
-
-//             if (error || !user) {
-//                 return res.status(404).json({ message: "User not found" });
-//             }
-
-//             const recipes = await Recipe.find({
-//                 _id: { $in: user.recipes_id_list },
-//             });
-//             if (!recipes) {
-//                 return res.status(404).json({ message: "Recipes not found" });
-//             }
-//             res.json(recipes);
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: "Internal server error", error });
-//     }
-// };
+    const categories = await Category.find();
+    if (!categories) {
+      console.log("Categories not found");
+    }
+    return categories;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
 
 export const getPublicRecipes = async (): Promise<RecipeType[] | undefined> => {
   try {
@@ -63,140 +36,63 @@ export const getPublicRecipes = async (): Promise<RecipeType[] | undefined> => {
   }
 };
 
-// export const addRecipe = async (req: MulterRequest, res: Response) => {
-//     const user_id = req.session.currentUser.id;
+export const addRecipe = async (formData: FormData, userId: string) => {
+  try {
+    await connectToDatabase();
+    const user = await getUserByClerkId(userId);
 
-//     const {
-//         name,
-//         description,
-//         is_private,
-//         category_id,
-//         ingredients,
-//         instructions,
-//     } = req.body;
+    if (!user) {
+      return { error: "User not found" };
+    }
 
-//     const parsedIngredients = JSON.parse(ingredients);
-//     const parsedInstructions = JSON.parse(instructions);
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const prep_time = formData.get("prep_time") as string;
+    const is_private = formData.get("is_private") === "true";
+    const category = formData.get("category") as string;
+    const ingredients = JSON.parse(
+      formData.get("ingredients") as string,
+    ) as IngredientType[];
+    const instructions = JSON.parse(
+      formData.get("instructions") as string,
+    ) as string[];
+    const recipe_pic = formData.get("recipe_pic") as File | null;
+    let recipe_pic_url = null;
 
-//     let newIngredients: IngredientType[] | { error: string };
+    if (recipe_pic) {
+      const arrayBuffer = await recipe_pic.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-//     try {
-//         newIngredients = await addMultipleIngredients(parsedIngredients);
-//     } catch (error) {
-//         return res
-//             .status(500)
-//             .json({ message: "Error adding ingredients", error });
-//     }
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "recipe_pictures" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(buffer);
+      });
+      recipe_pic_url = (uploadResult as any).secure_url;
+    }
 
-//     let recipePicUrl = "";
-//     if (req.file) {
-//         try {
-//             const result = await cloudinary.uploader.upload(req.file.path, {
-//                 folder: "recipes",
-//             });
-//             recipePicUrl = result.secure_url;
-//         } catch (error) {
-//             return res
-//                 .status(500)
-//                 .json({ message: "Error uploading image", error });
-//         }
-//     }
+    const newRecipe = Recipe.create({
+      name,
+      userId,
+      description,
+      is_private,
+      prep_time: convertToSeconds(prep_time),
+      recipe_pic: recipe_pic_url,
+      category,
+      ingredients,
+      instructions,
+    });
 
-//     if (Array.isArray(newIngredients)) {
-//         const ingredients_id_list = newIngredients.map(
-//             (ingredient: IngredientType) => ingredient._id
-//         );
+    return newRecipe;
+  } catch (error) {
+    return { error: "Error creating recipe" };
+  }
+};
 
-//         try {
-//             console.log(
-//                 "alooooo",
-//                 name,
-//                 description,
-//                 is_private,
-//                 recipePicUrl,
-//                 category_id,
-//                 ingredients_id_list,
-//                 parsedInstructions
-//             );
-
-//             const recipe = await Recipe.create({
-//                 name,
-//                 description,
-//                 is_private,
-//                 recipe_pic: recipePicUrl,
-//                 category_id,
-//                 ingredients_id_list,
-//                 parsedInstructions,
-//             });
-
-//             console.log("recipe");
-
-//             await User.findByIdAndUpdate(user_id, {
-//                 $push: { recipes_id_list: recipe._id },
-//             });
-
-//             res.status(201).json({
-//                 status: 201,
-//                 message: "Recipe Created",
-//                 data: recipe,
-//             });
-//         } catch (error) {
-//             res.status(500).json({ message: "Error creating recipe", error });
-//         }
-//     } else {
-//         throw new Error("Invalid response from addMultipleIngredients");
-//     }
-// };
-
-// export const updateRecipe = async (req: Request, res: Response) => {
-//     const recipe_id = req.params.recipe_id;
-//     const updateData = {
-//         ...req.body,
-//         updated_at: Date.now(),
-//     };
-
-//     try {
-//         const recipeUpdated = await Recipe.findByIdAndUpdate(
-//             recipe_id,
-//             updateData,
-//             {
-//                 new: true,
-//                 runValidators: true,
-//             }
-//         );
-
-//         if (!recipeUpdated) {
-//             return res.status(404).json({ message: "Recipe not found" });
-//         }
-
-//         res.status(200).json({
-//             status: 200,
-//             message: "Recipe Updated",
-//             data: recipeUpdated,
-//         });
-//     } catch (error) {
-//         res.status(500).json({ message: "Error updating recipe", error });
-//     }
-// };
-
-// export const deleteRecipe = async (req: Request, res: Response) => {
-//     const recipe_id = req.params.recipe_id;
-
-//     try {
-//         const result = await Recipe.findByIdAndDelete(recipe_id);
-
-//         if (!result) {
-//             return res.status(404).json({
-//                 status: 404,
-//                 message: "Recipe not found",
-//             });
-//         }
-
-//         res.status(200).json({
-//             status: 200,
-//             message: "Recipe deleted successfully",
-//         });
-//     } catch (error) {
-//         res.status(500).json({ message: "Error deleting recipe", error });
-//     }
-// };
+const convertToSeconds = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 3600 + minutes * 60;
+};

@@ -2,12 +2,14 @@ import mongoose, { ObjectId } from "mongoose";
 
 type RecipeType = {
   _id: ObjectId;
+  user_id: string;
   name: string;
   description: string;
+  prep_time: number;
   is_private: boolean;
   recipe_pic: string;
   category: string;
-  ingredients_id_list: mongoose.Types.ObjectId[];
+  ingredients: IngredientType[];
   instructions: string[];
   created_at: Date;
   updated_at?: Date;
@@ -27,14 +29,11 @@ export type UnitType =
   | "cup"
   | "pint";
 
-type IngredientType = {
+export type IngredientType = {
   name: string;
   unit_type: UnitType;
   quantity: number;
-  price_per_unit?: number;
-  created_at: Date;
-  updated_at?: Date;
-  _id: string;
+  price?: number;
 };
 
 export default RecipeType;
