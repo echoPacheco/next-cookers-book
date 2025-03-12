@@ -2,6 +2,7 @@
 import RecipeType from "@/types/recipe";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type RecipeDetailsProps = {
   recipe: RecipeType;
@@ -37,12 +38,14 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
         <span className="text-lg font-bold">&lt; Back</span>
       </button>
 
-      <img
+      <Image
         src={
           recipe.recipe_pic ||
           "https://morar.com.br/wp-content/uploads/2020/08/Receitas_Rapidas_Morar_Construtora.jpeg"
         }
         alt={recipe.name}
+        width={120}
+        height={120}
         className="h-60 w-full rounded-lg object-cover sm:h-80 md:h-96"
       />
 
@@ -55,10 +58,12 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
         {recipe.ingredients.some((i) => i.price) && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex items-center rounded-lg border border-gray-400 p-4">
-              <img
+              <Image
                 src="/icons/clock.svg"
                 alt="Clock icon"
                 className="mr-3 mt-1 h-6 w-6"
+                width={24}
+                height={24}
               />
               <div>
                 <p className="text-sm font-semibold">Prep time</p>
@@ -69,20 +74,24 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
             </div>
 
             <div className="flex items-center rounded-lg border border-gray-400 p-4">
-              <img
+              <Image
                 src="/icons/money.svg"
                 alt="Money icon"
                 className="mr-3 mt-1 h-6 w-6"
+                width={24}
+                height={24}
               />
               <div>
                 <p className="text-sm font-semibold">Total cost</p>
                 <p className="text-lg font-bold">${totalPrice.toFixed(2)}</p>
               </div>
 
-              <img
+              <Image
                 src="/icons/info.svg"
                 alt="Info icon"
                 className="ml-auto size-8 cursor-pointer"
+                width={32}
+                height={32}
                 onClick={() => setIsModalOpen(true)}
               />
             </div>

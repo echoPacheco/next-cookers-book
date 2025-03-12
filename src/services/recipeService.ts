@@ -7,6 +7,7 @@ import CategoryType from "@/types/category";
 import RecipeType, { IngredientType } from "@/types/recipe";
 import { getUserByClerkId } from "@/services/userService";
 import cloudinary from "@/cloudinaryConfig";
+import { UploadApiResponse } from "cloudinary";
 
 export const getCategories = async (): Promise<CategoryType[] | undefined> => {
   try {
@@ -95,7 +96,7 @@ export const addRecipe = async (formData: FormData, userId: string) => {
           })
           .end(buffer);
       });
-      recipe_pic_url = (uploadResult as any).secure_url;
+      recipe_pic_url = (uploadResult as UploadApiResponse).secure_url;
     }
 
     const newRecipe = Recipe.create({
@@ -112,6 +113,7 @@ export const addRecipe = async (formData: FormData, userId: string) => {
 
     return newRecipe;
   } catch (error) {
+    console.log("error", error);
     return { error: "Error creating recipe" };
   }
 };

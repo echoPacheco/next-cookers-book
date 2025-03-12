@@ -5,6 +5,7 @@ import { User } from "@/models/userSchema";
 import { revalidatePath } from "next/cache";
 import UserType from "@/types/user";
 import cloudinary from "@/cloudinaryConfig";
+import { UploadApiResponse } from "cloudinary";
 
 export async function getUserByClerkId(clerkId: string) {
   try {
@@ -66,7 +67,7 @@ export async function updateUserProfile(formData: FormData) {
           .end(buffer);
       });
 
-      profilePicUrl = (uploadResult as any).secure_url;
+      profilePicUrl = (uploadResult as UploadApiResponse).secure_url;
     }
 
     const updatedUser = await User.findOneAndUpdate(
