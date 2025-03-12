@@ -47,6 +47,7 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
         width={120}
         height={120}
         className="h-60 w-full rounded-lg object-cover sm:h-80 md:h-96"
+        unoptimized={true}
       />
 
       <div className="text-start">
