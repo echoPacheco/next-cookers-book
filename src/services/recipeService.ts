@@ -31,7 +31,7 @@ export const getPublicRecipes = async (): Promise<RecipeType[] | undefined> => {
     if (!recipes) {
       console.log("Recipes not found");
     }
-    return recipes;
+    return JSON.parse(JSON.stringify(recipes));
   } catch (error) {
     console.log("error", error);
   }
