@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose";
 
 type RecipeType = {
   _id: ObjectId;
-  user_id: string;
+  user_id: ObjectId;
   name: string;
   description: string;
   prep_time: number;

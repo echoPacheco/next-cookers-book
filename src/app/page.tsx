@@ -22,7 +22,7 @@ export default async function Home() {
   return (
     <main className="mx-10 my-8 max-w-full text-center">
       <span className="me-4 font-kalam text-4xl font-bold">
-        {user ? `Welcome, ${user.name}👋` : "Welcome to Cooker&apos;s book!"}
+        {user ? `Welcome, ${user.name}👋` : `Welcome to Cooker's book!`}
       </span>
       <span className="font-kalam text-4xl font-bold">Let&apos;s cook!</span>
       {/* <SearchFilter /> */}

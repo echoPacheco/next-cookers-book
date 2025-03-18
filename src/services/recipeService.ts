@@ -50,7 +50,7 @@ export const getRecipeById = async (
       return { error: "Recipe not found" };
     }
 
-    if (recipe.is_private && recipe.user_id !== userId) {
+    if (recipe.is_private && recipe.user_id.toString() !== userId) {
       return { error: "You are not authorized to view this recipe" };
     }
 
@@ -58,6 +58,29 @@ export const getRecipeById = async (
   } catch (error) {
     console.log("error", error);
     return { error: "Error fetching recipe" };
+  }
+};
+
+export const getMyRecipes = async (
+  userId: string,
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+    const user = await getUserByClerkId(userId);
+
+    if (!user) {
+      console.log("User not found");
+    }
+    console.log("id", userId);
+    console.log("userid", user);
+
+    const recipes = await Recipe.find({ user_id: user._id });
+    if (!recipes) {
+      console.log("Recipes not found");
+    }
+    return JSON.parse(JSON.stringify(recipes));
+  } catch (error) {
+    console.log("error", error);
   }
 };
 
@@ -101,7 +124,7 @@ export const addRecipe = async (formData: FormData, userId: string) => {
 
     const newRecipe = Recipe.create({
       name,
-      userId,
+      user_id: user._id,
       description,
       is_private,
       prep_time: convertToSeconds(prep_time),

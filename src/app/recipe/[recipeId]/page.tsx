@@ -8,7 +8,10 @@ import { notFound } from "next/navigation";
 async function fetchRecipe(id: string): Promise<RecipeType | null> {
   try {
     const userClerk = await currentUser();
-    const userId = userClerk ? (await getUserByClerkId(userClerk.id)).id : null;
+    const userId = userClerk
+      ? (await getUserByClerkId(userClerk.id))._id
+      : null;
+
     const res = await getRecipeById(id, userId);
 
     if ("error" in res) {

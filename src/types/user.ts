@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 type UserType = {
+  _id: mongoose.Types.ObjectId;
   clerk_id: string;
   email?: string;
   name: string;

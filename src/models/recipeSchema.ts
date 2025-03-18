@@ -1,9 +1,9 @@
-import mongoose, { models } from "mongoose";
+import mongoose, { models, Schema } from "mongoose";
 import RecipeType from "@/types/recipe";
 
 const recipeSchema = new mongoose.Schema<RecipeType>({
   user_id: {
-    type: String,
+    type: Schema.Types.ObjectId,
     require: true,
   },
   name: {
