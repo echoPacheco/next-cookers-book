@@ -6,10 +6,10 @@ const Navbar = async () => {
   return (
     <>
       {/* Navbar Desktop */}
-      <div className="hidden md:flex w-full h-20 shadow-md bg-brown items-center justify-between px-8">
+      <div className="hidden h-20 w-full items-center justify-between bg-brown px-8 shadow-md md:flex">
         <Link
           href="/"
-          className="text-white text-lg font-semibold flex items-center hover:text-white"
+          className="flex items-center text-lg font-semibold text-white hover:text-white"
         >
           <Image
             className="max-h-12"
@@ -21,11 +21,11 @@ const Navbar = async () => {
           Cooker&apos;s Book
         </Link>
 
-        <nav className="flex-1 flex justify-end space-x-6 mx-5">
+        <nav className="mx-5 flex flex-1 justify-end space-x-6">
           <Link href="/" className="text-gray-200 hover:text-white">
             Home
           </Link>
-          <Link href="/user_recipes" className="text-gray-200 hover:text-white">
+          <Link href="/myRecipes" className="text-gray-200 hover:text-white">
             My Recipes
           </Link>
           <Link href="/profile" className="text-gray-200 hover:text-white">
@@ -36,12 +36,12 @@ const Navbar = async () => {
         <div className="flex space-x-4">
           <SignedIn>
             <Link href="/recipe">
-              <button className="bg-dark_brown text-white hover:opacity-85 py-2 px-4 rounded-md">
+              <button className="rounded-md bg-dark_brown px-4 py-2 text-white hover:opacity-85">
                 Add recipe
               </button>
             </Link>
             <SignOutButton>
-              <button className="bg-white text-dark_brown hover:opacity-85 py-2 px-4 rounded-md">
+              <button className="rounded-md bg-white px-4 py-2 text-dark_brown hover:opacity-85">
                 Logout
               </button>
             </SignOutButton>
@@ -50,7 +50,7 @@ const Navbar = async () => {
           <SignedOut>
             <Link
               href={"/sign-in"}
-              className="bg-white text-dark_brown hover:opacity-75 py-2 px-4 rounded-md"
+              className="rounded-md bg-white px-4 py-2 text-dark_brown hover:opacity-75"
             >
               Sign In
             </Link>
@@ -59,13 +59,13 @@ const Navbar = async () => {
       </div>
 
       {/* Navbar Mobile */}
-      <div className="fixed bottom-0 w-full md:hidden bg-light_brown text-black shadow-md flex justify-around py-3 z-50">
-        <Link href="/" className="flex flex-col gap-1 items-center">
+      <div className="fixed bottom-0 z-50 flex w-full justify-around bg-light_brown py-3 text-black shadow-md md:hidden">
+        <Link href="/" className="flex flex-col items-center gap-1">
           <Image src="/icons/home.svg" alt="Home" width={24} height={24} />
           <span className="text-xs">Home</span>
         </Link>
 
-        <Link href="/user_recipes" className="flex flex-col gap-1 items-center">
+        <Link href="/search" className="flex flex-col items-center gap-1">
           <Image
             src="/icons/search.svg"
             alt="Magnifying Glass"
@@ -75,7 +75,7 @@ const Navbar = async () => {
           <span className="text-xs">Search</span>
         </Link>
 
-        <Link href="/user_recipes" className="flex flex-col gap-1 items-center">
+        <Link href="/myRecipes" className="flex flex-col items-center gap-1">
           <Image
             src="/icons/heart.svg"
             alt="Heart Icon"
@@ -85,12 +85,12 @@ const Navbar = async () => {
           <span className="text-xs">Favorites</span>
         </Link>
 
-        <Link href="/recipe" className="flex flex-col gap-1 items-center">
+        <Link href="/recipe" className="flex flex-col items-center gap-1">
           <Image src="/icons/add.svg" alt="Plus icon" width={24} height={24} />
           <span className="text-xs">Create</span>
         </Link>
 
-        <Link href="/profile" className="flex flex-col gap-1 items-center">
+        <Link href="/profile" className="flex flex-col items-center gap-1">
           <Image src="/icons/user.svg" alt="Profile" width={24} height={24} />
           <span className="text-xs">Profile</span>
         </Link>

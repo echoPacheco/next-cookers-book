@@ -6,7 +6,7 @@ type RecipeCardProps = {
 };
 
 const RecipeCard = ({ recipe }: RecipeCardProps) => {
-  const { name, recipe_pic, category } = recipe;
+  const { name, recipe_pic } = recipe;
 
   return (
     <>
@@ -20,12 +20,12 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
           width={350}
           height={350}
           alt={name || "Default recipe image"}
-          className="h-44 w-full rounded-t-xl object-cover md:h-36 xl:h-48"
+          className="h-36 w-full rounded-t-xl object-cover"
           onDragStart={(e) => e.preventDefault()}
         />
         <div className="flex items-center justify-center rounded-xl bg-white p-2 pb-2">
           <h2
-            className="w-full overflow-hidden truncate whitespace-nowrap text-center text-xl font-semibold text-dark_brown"
+            className="w-full truncate text-center text-base font-semibold text-dark_brown"
             title={name}
           >
             {name}

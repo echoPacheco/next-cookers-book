@@ -71,10 +71,24 @@ export const getMyRecipes = async (
     if (!user) {
       console.log("User not found");
     }
-    console.log("id", userId);
-    console.log("userid", user);
 
     const recipes = await Recipe.find({ user_id: user._id });
+    if (!recipes) {
+      console.log("Recipes not found");
+    }
+    return JSON.parse(JSON.stringify(recipes));
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const getFeaturedRecipes = async (
+  category: string,
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+
+    const recipes = await Recipe.find({ category });
     if (!recipes) {
       console.log("Recipes not found");
     }

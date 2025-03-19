@@ -54,7 +54,7 @@ const RecipeList = ({ recipes }: RecipeListProps) => {
           className="flex-shrink-0 text-gray-200 hover:text-white"
           onClick={(e) => isClickPrevented && e.preventDefault()}
         >
-          <div className="w-[350px]">
+          <div className="w-36 md:w-48 lg:w-72">
             <RecipeCard recipe={recipe} />
           </div>
         </Link>

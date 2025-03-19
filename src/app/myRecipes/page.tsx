@@ -1,14 +1,14 @@
 import RecipeList from "@/components/RecipeList";
-import { getFeaturedRecipes, getPublicRecipes } from "@/services/recipeService";
+import { getFeaturedRecipes, getMyRecipes } from "@/services/recipeService";
 import { findOrCreateUser } from "@/services/userService";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 
-export default async function Home() {
-  const publicRecipes = await getPublicRecipes();
-  const featuredRecipes = await getFeaturedRecipes("Bakery");
-
+export default async function MyRecipes() {
   const clerkUser = await currentUser();
+  const userRecipes = clerkUser ? await getMyRecipes(clerkUser.id) : null;
+  const publicRecipes = await getFeaturedRecipes("Bakery");
+
   let user;
 
   if (clerkUser) {
@@ -22,18 +22,20 @@ export default async function Home() {
   return (
     <main className="mx-5 my-8 max-w-full text-center sm:mx-10">
       <span className="me-4 font-kalam text-4xl font-bold">
-        {user ? `Welcome, ${user.name}👋` : `Welcome to Cooker's book!`}
+        {user ? `Hey, ${user.name}!` : `Welcome to Cooker's book!`}
       </span>
       <br />
-      <span className="font-kalam text-4xl font-bold">Let&apos;s cook!</span>
+      <span className="font-kalam text-4xl font-bold">
+        What are we cooking today?
+      </span>
       <div className="mb-6">
         <div className="flex justify-between text-xl">
-          <p>Featured Recipe</p>
-          <Link href={"/search/featured"}>see more &gt;</Link>
+          <p>My Recipes</p>
+          <Link href={"/search/myRecipes"}>see more &gt;</Link>
         </div>
         <section>
-          {featuredRecipes && featuredRecipes.length > 0 ? (
-            <RecipeList recipes={featuredRecipes} />
+          {userRecipes && userRecipes.length > 0 ? (
+            <RecipeList recipes={userRecipes} />
           ) : (
             <p>No recipes available at the moment. Please check back later!</p>
           )}
@@ -42,8 +44,8 @@ export default async function Home() {
 
       <div className="mb-6">
         <div className="flex justify-between text-xl">
-          <p>Recent checked</p>
-          <Link href={"/search"}>see more &gt;</Link>
+          <p>Favorites</p>
+          <Link href={"/search/favorites"}>see more &gt;</Link>
         </div>
         <section>
           {publicRecipes && publicRecipes.length > 0 ? (

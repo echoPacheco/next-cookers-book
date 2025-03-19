@@ -21,10 +21,6 @@ const NewRecipeForm = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(category);
-  }, [category]);
-
-  useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
