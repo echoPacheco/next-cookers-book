@@ -1,7 +1,6 @@
 import RecipeDetails from "@/components/RecipeDetails";
 import { getRecipeById } from "@/services/recipeService";
 import { checkFavoriteRecipe, getUserByClerkId } from "@/services/userService";
-import RecipeType from "@/types/recipe";
 import { currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 

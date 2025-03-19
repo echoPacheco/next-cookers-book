@@ -3,7 +3,6 @@ import {
   getFeaturedRecipes,
   //   getRecentRecipes,
   getMyRecipes,
-  getPublicRecipes,
   //   getFavoriteRecipes,
 } from "@/services/recipeService";
 import { currentUser } from "@clerk/nextjs/server";

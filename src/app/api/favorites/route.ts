@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Error in POST /api/favorites:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
       { status: 500 },
