@@ -8,6 +8,7 @@ import RecipeType, { IngredientType } from "@/types/recipe";
 import { getUserByClerkId } from "@/services/userService";
 import cloudinary from "@/cloudinaryConfig";
 import { UploadApiResponse } from "cloudinary";
+import { User } from "@/models/userSchema";
 
 export const getCategories = async (): Promise<CategoryType[] | undefined> => {
   try {
@@ -95,6 +96,27 @@ export const getFeaturedRecipes = async (
     return JSON.parse(JSON.stringify(recipes));
   } catch (error) {
     console.log("error", error);
+  }
+};
+
+export const getFavoriteRecipes = async (
+  userId: string,
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findOne({ clerk_id: userId }).populate(
+      "favorite_recipes_id_list",
+    );
+
+    if (!user || !user.favorite_recipes_id_list.length) {
+      console.log("No favorite recipes found");
+      return [];
+    }
+
+    return JSON.parse(JSON.stringify(user.favorite_recipes_id_list));
+  } catch (error) {
+    console.error("Error fetching favorite recipes:", error);
   }
 };
 

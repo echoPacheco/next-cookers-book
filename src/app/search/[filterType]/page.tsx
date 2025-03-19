@@ -1,4 +1,5 @@
 import {
+  getFavoriteRecipes,
   getFeaturedRecipes,
   //   getRecentRecipes,
   getMyRecipes,
@@ -29,9 +30,11 @@ const FilterPage = async ({ params }: { params: { filterType: string } }) => {
           ? await getMyRecipes(userClerk.id)
           : redirect("/sign-in");
 
-      //   case "favorites":
-      // filterName = "Favorites";
-      //     return await getFavoriteRecipes();
+      case "favorites":
+        filterName = "Favorites";
+        return userClerk
+          ? await getFavoriteRecipes(userClerk.id)
+          : redirect("/sign-in");
       default:
         return [];
     }

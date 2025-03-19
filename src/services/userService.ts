@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import UserType from "@/types/user";
 import cloudinary from "@/cloudinaryConfig";
 import { UploadApiResponse } from "cloudinary";
+import { ObjectId } from "mongodb";
 
 export async function getUserByClerkId(clerkId: string) {
   try {
@@ -87,3 +88,63 @@ export async function updateUserProfile(formData: FormData) {
     return { error: "Failed to update profile" };
   }
 }
+
+export const checkFavoriteRecipe = async (
+  recipeId: string,
+  userId: string,
+): Promise<boolean> => {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findOne({ _id: userId }).select(
+      "favorite_recipes_id_list",
+    );
+
+    if (!user) {
+      console.log("User not found");
+      return false;
+    }
+
+    return user.favorite_recipes_id_list.some(
+      (favId: ObjectId) => favId.toString() === recipeId,
+    );
+  } catch (error) {
+    console.error("Error checking favorite recipe:", error);
+    return false;
+  }
+};
+
+export const toggleFavoriteRecipe = async (
+  userId: string,
+  recipeId: string,
+) => {
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const recipeObjectId = new ObjectId(recipeId);
+    const isFavorite = user.favorite_recipes_id_list.some((id: ObjectId) =>
+      id.equals(recipeObjectId),
+    );
+
+    if (isFavorite) {
+      user.favorite_recipes_id_list = user.favorite_recipes_id_list.filter(
+        (id: ObjectId) => !id.equals(recipeObjectId),
+      );
+    } else {
+      user.favorite_recipes_id_list.push(recipeObjectId);
+    }
+
+    await user.save();
+    revalidatePath("/favorites");
+
+    return { success: true, isFavorite: !isFavorite };
+  } catch (error) {
+    console.error("Error toggling favorite recipe:", error);
+    return { success: false, error: "Failed to toggle favorite" };
+  }
+};

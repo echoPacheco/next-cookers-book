@@ -6,10 +6,15 @@ import Image from "next/image";
 
 type RecipeDetailsProps = {
   recipe: RecipeType;
+  isFavorite: boolean;
 };
 
-export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
+export default function RecipeDetails({
+  recipe,
+  isFavorite,
+}: RecipeDetailsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [favorite, setFavorite] = useState(isFavorite);
   const router = useRouter();
 
   const totalPrice = recipe.ingredients.reduce((acc, ingredient) => {
@@ -26,6 +31,24 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
   const handleCloseModal = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setIsModalOpen(false);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    try {
+      const response = await fetch("/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recipeId: recipe._id }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update favorite");
+
+      setFavorite((prev) => !prev);
+    } catch (error) {
+      console.error("Error updating favorite:", error);
     }
   };
 
@@ -51,9 +74,32 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
       />
 
       <div className="text-start">
-        <h1 className="mb-2 font-kalam text-3xl font-bold sm:text-4xl">
-          {recipe.name}
-        </h1>
+        <div className="mb-2 flex items-center justify-between">
+          <h1 className="font-kalam text-3xl font-bold sm:text-4xl">
+            {recipe.name}
+          </h1>
+          <button
+            onClick={toggleFavorite}
+            aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            {favorite ? (
+              <Image
+                src="/icons/heart-filled.svg"
+                alt="Favorite"
+                width={24}
+                height={24}
+              />
+            ) : (
+              <Image
+                src="/icons/heart.svg"
+                alt="Add to favorites"
+                width={24}
+                height={24}
+              />
+            )}
+          </button>
+        </div>
+
         <p className="mb-4">{recipe.description}</p>
 
         {recipe.ingredients.some((i) => i.price) && (

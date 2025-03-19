@@ -18,10 +18,10 @@ const userSchema = new mongoose.Schema<UserType>({
   profile_pic: {
     type: String,
   },
-  recipes_id_list: [
+  favorite_recipes_id_list: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Recipes",
+      ref: "Recipe",
     },
   ],
   created_at: {

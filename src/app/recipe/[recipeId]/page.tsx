@@ -1,25 +1,28 @@
 import RecipeDetails from "@/components/RecipeDetails";
 import { getRecipeById } from "@/services/recipeService";
-import { getUserByClerkId } from "@/services/userService";
+import { checkFavoriteRecipe, getUserByClerkId } from "@/services/userService";
 import RecipeType from "@/types/recipe";
 import { currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 
-async function fetchRecipe(id: string): Promise<RecipeType | null> {
+async function fetchRecipe(id: string) {
   try {
     const userClerk = await currentUser();
     const userId = userClerk
-      ? (await getUserByClerkId(userClerk.id))._id
+      ? (await getUserByClerkId(userClerk.id))?._id
       : null;
 
-    const res = await getRecipeById(id, userId);
-
-    if ("error" in res) {
-      console.error(res.error);
+    const recipe = await getRecipeById(id, userId);
+    if (!recipe || "error" in recipe) {
+      console.error(recipe?.error || "Recipe not found");
       return null;
     }
 
-    return res;
+    const isFavorite = userId
+      ? await checkFavoriteRecipe(recipe._id.toString(), userId)
+      : false;
+
+    return { recipe, isFavorite };
   } catch (error) {
     console.error("Error fetching recipe:", error);
     return null;
@@ -33,13 +36,19 @@ export default async function RecipeDetailsPage({
     recipeId: string;
   };
 }) {
-  const recipe = await fetchRecipe(params.recipeId);
+  try {
+    const result = await fetchRecipe(params.recipeId);
+    if (!result) return notFound();
 
-  if (!recipe) return notFound();
+    const { recipe, isFavorite } = result;
 
-  return (
-    <main className="mx-auto my-8 max-w-5xl px-4 sm:px-6 lg:px-8">
-      <RecipeDetails recipe={recipe} />
-    </main>
-  );
+    return (
+      <main className="mx-auto my-8 max-w-5xl px-4 sm:px-6 lg:px-8">
+        <RecipeDetails recipe={recipe} isFavorite={isFavorite} />
+      </main>
+    );
+  } catch (error) {
+    console.error("Error rendering RecipeDetailsPage:", error);
+    return notFound();
+  }
 }
