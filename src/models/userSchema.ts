@@ -24,6 +24,12 @@ const userSchema = new mongoose.Schema<UserType>({
       ref: "Recipe",
     },
   ],
+  recent_recipes_id_list: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Recipe",
+    },
+  ],
   created_at: {
     type: Date,
     default: Date.now,

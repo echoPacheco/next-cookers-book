@@ -36,6 +36,8 @@ export default function RecipeDetails({
 
   const toggleFavorite = async () => {
     try {
+      setFavorite((prev) => !prev);
+
       const response = await fetch("/api/favorites", {
         method: "POST",
         headers: {
@@ -44,9 +46,10 @@ export default function RecipeDetails({
         body: JSON.stringify({ recipeId: recipe._id }),
       });
 
-      if (!response.ok) throw new Error("Failed to update favorite");
-
-      setFavorite((prev) => !prev);
+      if (!response.ok) {
+        setFavorite((prev) => !prev);
+        throw new Error("Failed to update favorite");
+      }
     } catch (error) {
       console.error("Error updating favorite:", error);
     }

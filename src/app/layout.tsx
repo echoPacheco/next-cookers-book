@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, ClerkLoaded } from "@clerk/nextjs";
 import "./globals.css";
-// import Footer from "@/components/layouts/Footer";
 import Navbar from "@/components/layouts/Navbar";
 
 export const metadata: Metadata = {
@@ -10,18 +9,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`antialiased pb-16 md:pb-0`}>
-          <Navbar />
-          {children}
-          {/* <Footer /> */}
-        </body>
-      </html>
+      <ClerkLoaded>
+        <html lang="en">
+          <body className="pb-16 antialiased md:pb-0">
+            <Navbar />
+            {children}
+          </body>
+        </html>
+      </ClerkLoaded>
     </ClerkProvider>
   );
 }

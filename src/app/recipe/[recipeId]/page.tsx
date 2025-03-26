@@ -1,6 +1,10 @@
 import RecipeDetails from "@/components/RecipeDetails";
 import { getRecipeById } from "@/services/recipeService";
-import { checkFavoriteRecipe, getUserByClerkId } from "@/services/userService";
+import {
+  addRecentRecipe,
+  checkFavoriteRecipe,
+  getUserByClerkId,
+} from "@/services/userService";
 import { currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 
@@ -18,8 +22,12 @@ async function fetchRecipe(id: string) {
     }
 
     const isFavorite = userId
-      ? await checkFavoriteRecipe(recipe._id.toString(), userId)
+      ? await checkFavoriteRecipe(userId, recipe._id.toString())
       : false;
+
+    if (userId) {
+      await addRecentRecipe(userId, recipe._id.toString());
+    }
 
     return { recipe, isFavorite };
   } catch (error) {

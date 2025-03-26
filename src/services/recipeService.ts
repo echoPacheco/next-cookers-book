@@ -120,6 +120,27 @@ export const getFavoriteRecipes = async (
   }
 };
 
+export const getRecentRecipes = async (
+  userId: string,
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findOne({ clerk_id: userId }).populate(
+      "recent_recipes_id_list",
+    );
+
+    if (!user || !user.recent_recipes_id_list.length) {
+      console.log("No recent recipes found");
+      return [];
+    }
+
+    return JSON.parse(JSON.stringify(user.recent_recipes_id_list));
+  } catch (error) {
+    console.error("Error fetching recent recipes:", error);
+  }
+};
+
 export const addRecipe = async (formData: FormData, userId: string) => {
   try {
     await connectToDatabase();

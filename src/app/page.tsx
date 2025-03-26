@@ -1,14 +1,13 @@
 import RecipeList from "@/components/RecipeList";
-import { getFeaturedRecipes, getPublicRecipes } from "@/services/recipeService";
+import { getFeaturedRecipes, getRecentRecipes } from "@/services/recipeService";
 import { findOrCreateUser } from "@/services/userService";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export default async function Home() {
-  const publicRecipes = await getPublicRecipes();
   const featuredRecipes = await getFeaturedRecipes("Bakery");
-
   const clerkUser = await currentUser();
+  const recentRecipes = clerkUser ? await getRecentRecipes(clerkUser.id) : null;
   let user;
 
   if (clerkUser) {
@@ -46,8 +45,8 @@ export default async function Home() {
           <Link href={"/search"}>see more &gt;</Link>
         </div>
         <section>
-          {publicRecipes && publicRecipes.length > 0 ? (
-            <RecipeList recipes={publicRecipes} />
+          {recentRecipes && recentRecipes.length > 0 ? (
+            <RecipeList recipes={recentRecipes} />
           ) : (
             <p>No recipes available at the moment. Please check back later!</p>
           )}

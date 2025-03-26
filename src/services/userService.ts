@@ -89,9 +89,38 @@ export async function updateUserProfile(formData: FormData) {
   }
 }
 
-export const checkFavoriteRecipe = async (
-  recipeId: string,
+export const addRecentRecipe = async (
   userId: string,
+  recipeId: string,
+): Promise<void> => {
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const recipeObjectId = new ObjectId(recipeId);
+    const index = user.recent_recipes_id_list.findIndex((id: ObjectId) =>
+      id.equals(recipeObjectId),
+    );
+
+    if (index !== -1) {
+      user.recent_recipes_id_list.splice(index, 1);
+    }
+
+    user.recent_recipes_id_list.unshift(recipeObjectId);
+
+    await user.save();
+  } catch (error) {
+    console.error("Error adding recent recipe:", error);
+  }
+};
+
+export const checkFavoriteRecipe = async (
+  userId: string,
+  recipeId: string,
 ): Promise<boolean> => {
   try {
     await connectToDatabase();
@@ -140,7 +169,7 @@ export const toggleFavoriteRecipe = async (
     }
 
     await user.save();
-    revalidatePath("/favorites");
+    revalidatePath("/myRecipes");
 
     return { success: true, isFavorite: !isFavorite };
   } catch (error) {

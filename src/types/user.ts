@@ -7,6 +7,7 @@ type UserType = {
   name: string;
   profile_pic: string;
   favorite_recipes_id_list?: mongoose.Types.ObjectId[];
+  recent_recipes_id_list?: mongoose.Types.ObjectId[];
   created_at: Date;
   updated_at?: Date;
 };
