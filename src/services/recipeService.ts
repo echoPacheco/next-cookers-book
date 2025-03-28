@@ -2,8 +2,6 @@ import connectToDatabase from "@/lib/db";
 import { Category } from "@/models/categorySchema";
 import { Recipe } from "@/models/recipeSchema";
 import CategoryType from "@/types/category";
-// import { getUserById } from "./userController";
-// import { User } from "@/models/userSchema";
 import RecipeType, { IngredientType } from "@/types/recipe";
 import { getUserByClerkId } from "@/services/userService";
 import cloudinary from "@/cloudinaryConfig";
@@ -71,8 +69,83 @@ export const getRecipeById = async (
   }
 };
 
+export const getFeaturedRecipes = async (
+  category: string,
+  name?: string,
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+
+    const filters: { [key: string]: any } = {};
+    filters.is_private = false;
+    if (name) filters.name = { $regex: name, $options: "i" };
+    if (category) filters.category = category;
+    else {
+      console.log("Category not provided");
+      return;
+    }
+
+    const recipes = await Recipe.find(filters);
+
+    if (!recipes) {
+      console.log("Recipes not found");
+    }
+    return JSON.parse(JSON.stringify(recipes));
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const getRecentRecipes = async (
+  userId: string,
+  params: {
+    name?: string;
+    category?: string;
+  } = {},
+): Promise<RecipeType[] | undefined> => {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findOne({ clerk_id: userId });
+
+    if (!user || !user.recent_recipes_id_list.length) {
+      console.log("No recent recipes found");
+      return [];
+    }
+
+    const { name, category } = params;
+
+    const filters: { [key: string]: any } = {
+      _id: { $in: user.recent_recipes_id_list },
+    };
+
+    if (name) {
+      filters.name = { $regex: name, $options: "i" };
+    }
+    if (category) {
+      filters.category = category;
+    }
+
+    const recipes = await Recipe.find(filters);
+
+    if (recipes.length === 0) {
+      console.log("No matching recent recipes found");
+      return [];
+    }
+
+    return JSON.parse(JSON.stringify(recipes));
+  } catch (error) {
+    console.error("Error fetching recent recipes:", error);
+    throw error;
+  }
+};
+
 export const getMyRecipes = async (
   userId: string,
+  params: {
+    name?: string;
+    category?: string;
+  } = {},
 ): Promise<RecipeType[] | undefined> => {
   try {
     await connectToDatabase();
@@ -80,73 +153,78 @@ export const getMyRecipes = async (
 
     if (!user) {
       console.log("User not found");
+      return;
     }
 
-    const recipes = await Recipe.find({ user_id: user._id });
-    if (!recipes) {
-      console.log("Recipes not found");
+    const { name, category } = params;
+
+    const filters: { [key: string]: any } = {
+      is_private: false,
+      user_id: user._id,
+    };
+
+    if (name) {
+      filters.name = { $regex: name, $options: "i" };
     }
+    if (category) {
+      filters.category = category;
+    }
+
+    const recipes = await Recipe.find(filters);
+
+    if (recipes.length === 0) {
+      console.log("No recipes found");
+      return [];
+    }
+
     return JSON.parse(JSON.stringify(recipes));
   } catch (error) {
-    console.log("error", error);
-  }
-};
-
-export const getFeaturedRecipes = async (
-  category: string,
-): Promise<RecipeType[] | undefined> => {
-  try {
-    await connectToDatabase();
-
-    const recipes = await Recipe.find({ category });
-    if (!recipes) {
-      console.log("Recipes not found");
-    }
-    return JSON.parse(JSON.stringify(recipes));
-  } catch (error) {
-    console.log("error", error);
+    console.error("Error fetching recipes:", error);
+    throw error;
   }
 };
 
 export const getFavoriteRecipes = async (
   userId: string,
+  params: {
+    name?: string;
+    category?: string;
+  } = {},
 ): Promise<RecipeType[] | undefined> => {
   try {
     await connectToDatabase();
 
-    const user = await User.findOne({ clerk_id: userId }).populate(
-      "favorite_recipes_id_list",
-    );
+    const user = await User.findOne({ clerk_id: userId });
 
     if (!user || !user.favorite_recipes_id_list.length) {
       console.log("No favorite recipes found");
       return [];
     }
 
-    return JSON.parse(JSON.stringify(user.favorite_recipes_id_list));
-  } catch (error) {
-    console.error("Error fetching favorite recipes:", error);
-  }
-};
+    const { name, category } = params;
 
-export const getRecentRecipes = async (
-  userId: string,
-): Promise<RecipeType[] | undefined> => {
-  try {
-    await connectToDatabase();
+    const filters: { [key: string]: any } = {
+      _id: { $in: user.favorite_recipes_id_list },
+    };
 
-    const user = await User.findOne({ clerk_id: userId }).populate(
-      "recent_recipes_id_list",
-    );
+    if (name) {
+      filters.name = { $regex: name, $options: "i" };
+    }
+    if (category) {
+      filters.category = category;
+    }
 
-    if (!user || !user.recent_recipes_id_list.length) {
-      console.log("No recent recipes found");
+    const recipes = await Recipe.find(filters);
+
+    if (recipes.length === 0) {
+      console.log("No matching favorite recipes found");
       return [];
     }
 
-    return JSON.parse(JSON.stringify(user.recent_recipes_id_list));
+    return JSON.parse(JSON.stringify(recipes));
   } catch (error) {
-    console.error("Error fetching recent recipes:", error);
+    console.error("Error fetching favorite recipes:", error);
+    throw error;
   }
 };
 

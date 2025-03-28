@@ -101,19 +101,23 @@ const SearchFilter = () => {
       </div>
       <div
         ref={carouselRef}
-        className="no-scrollbar flex cursor-grab select-none gap-3 overflow-x-auto whitespace-nowrap py-4 active:cursor-grabbing"
+        className="no-scrollbar flex cursor-grab select-none gap-4 overflow-x-auto whitespace-nowrap pt-4 active:cursor-grabbing lg:gap-8"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseUp}
         onMouseUp={handleMouseUp}
       >
         <Link
-          href={`${pathname}`}
-          className="w-20 flex-shrink-0 sm:w-[100px]"
+          href={`${pathname}?${(() => {
+            const params = new URLSearchParams(searchParams);
+            params.delete("category");
+            return params.toString();
+          })()}`}
+          className="flex-shrink-0"
           onClick={(e) => isClickPrevented && e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
         >
-          <div className="flex max-w-[120px] flex-col items-center">
+          <div className="flex flex-col items-center">
             <Image
               src="/categories/default.svg"
               alt="All categories"
@@ -132,11 +136,11 @@ const SearchFilter = () => {
             <Link
               key={category._id.toString()}
               href={`${pathname}?${params.toString()}`}
-              className="w-20 flex-shrink-0 sm:w-[100px]"
+              className="flex-shrink-0"
               onClick={(e) => isClickPrevented && e.preventDefault()}
               onDragStart={(e) => e.preventDefault()}
             >
-              <div className="flex max-w-[120px] flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Image
                   src={
                     category.img
