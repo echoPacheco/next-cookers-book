@@ -7,6 +7,9 @@ const categorySchema = new mongoose.Schema<CategoryType>({
     unique: true,
     required: true,
   },
+  img: {
+    type: String,
+  },
   created_at: {
     type: Date,
     default: Date.now,

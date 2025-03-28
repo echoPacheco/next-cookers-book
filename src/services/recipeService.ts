@@ -24,11 +24,20 @@ export const getCategories = async (): Promise<CategoryType[] | undefined> => {
   }
 };
 
-export const getPublicRecipes = async (): Promise<RecipeType[] | undefined> => {
+export const getPublicRecipes = async (params: {
+  name?: string;
+  category?: string;
+}): Promise<RecipeType[] | undefined> => {
   try {
     await connectToDatabase();
 
-    const recipes = await Recipe.find({ is_private: false });
+    const { name, category } = params;
+    const filters: { [key: string]: any } = {};
+    filters.is_private = false;
+    if (name) filters.name = { $regex: name, $options: "i" };
+    if (category) filters.category = category;
+
+    const recipes = await Recipe.find(filters);
     if (!recipes) {
       console.log("Recipes not found");
     }

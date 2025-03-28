@@ -14,14 +14,14 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <ClerkLoaded>
-        <html lang="en">
-          <body className="pb-16 antialiased md:pb-0">
+      <html lang="en">
+        <body className="pb-16 antialiased md:pb-0">
+          <ClerkLoaded>
             <Navbar />
             {children}
-          </body>
-        </html>
-      </ClerkLoaded>
+          </ClerkLoaded>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
