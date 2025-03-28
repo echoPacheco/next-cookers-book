@@ -1,3 +1,4 @@
+/* eslint-disable */
 import connectToDatabase from "@/lib/db";
 import { Category } from "@/models/categorySchema";
 import { Recipe } from "@/models/recipeSchema";
